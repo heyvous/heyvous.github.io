@@ -33,4 +33,7 @@ body{
 .contact{
   max-width: 50px;
   max-height: 50px;
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
 }

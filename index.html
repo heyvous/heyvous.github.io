@@ -1,22 +1,72 @@
+<!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <title>HEY VOUS!</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="paper-full.js"></script>
+    <script type="text/paperscript" canvas="canvas">
+// Based on 'JPEG Raster' by Jonathan Puckey:
+// http://www.flickr.com/photos/puckey/3179779686/in/photostream/
 
-  <title>Hey Vous!</title>
-  <link rel="stylesheet" href="css/style.css">
-  <!-- <script language="javascript" type="text/javascript" src="libraries/p5.js"></script> -->
-  <!-- <script language="javascript" type="text/javascript" src="instance.js"></script> -->
+// Create a raster item using the image with id='mona'
+var raster = new Raster('mona');
 
+// Make the raster invisible:
+raster.visible = false;
+
+var lastPos = view.center;
+function moveHandler(event) {
+    if (lastPos.getDistance(event.point) < 10)
+        return;
+    lastPos = event.point;
+
+    var size = this.bounds.size.clone();
+    var isLandscape = size.width > size.height;
+
+    // If the path is in landscape orientation, we're going to
+    // split the path horizontally, otherwise vertically:
+
+    size /= isLandscape ? [2, 1] : [1, 2];
+
+    var path = new Path.Rectangle({
+        point: this.bounds.topLeft.floor(),
+        size: size.ceil(),
+        onMouseMove: moveHandler
+    });
+    path.fillColor = raster.getAverageColor(path);
+
+    var path = new Path.Rectangle({
+        point: isLandscape
+            ? this.bounds.topCenter.ceil()
+            : this.bounds.leftCenter.ceil(),
+        size: size.floor(),
+        onMouseMove: moveHandler
+    });
+    path.fillColor = raster.getAverageColor(path);
+
+    this.remove();
+}
+
+function onResize(event) {
+    project.activeLayer.removeChildren();
+
+    // Transform the raster so that it fills the bounding rectangle
+    // of the view:
+    raster.fitBounds(view.bounds, true);
+
+    // Create a path that fills the view, and fill it with
+    // the average color of the raster:
+    new Path.Rectangle({
+        rectangle: view.bounds,
+        fillColor: raster.getAverageColor(view.bounds),
+        onMouseMove: moveHandler
+    });
+}
+    </script>
 </head>
-
 <body>
-
-<!-- <canvas id="container" class="container" height="500" width="800">
-</canvas> -->
-
-<img src="img/heyvous_gif.gif" class="banner" alt="gif">
-<a href="mailto:michael@heyvo.us"><img src="img/yellw.svg" class="contact" alt=""></a>
-
-
+    <canvas id="canvas" resize></canvas>
+    <img width="512" height="512" id="mona" style="display: none;" src="test.png">
 </body>
 </html>

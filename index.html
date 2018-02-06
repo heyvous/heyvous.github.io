@@ -6,67 +6,126 @@
     <link rel="stylesheet" href="style.css">
     <script type="text/javascript" src="paper-full.js"></script>
     <script type="text/paperscript" canvas="canvas">
-// Based on 'JPEG Raster' by Jonathan Puckey:
-// http://www.flickr.com/photos/puckey/3179779686/in/photostream/
+  // Based on 'JPEG Raster' by Jonathan Puckey:
+  // http://www.flickr.com/photos/puckey/3179779686/in/photostream/
 
-// Create a raster item using the image with id='mona'
-var raster = new Raster('mona');
+  // Create a raster item using the image with id='mona'
+  var raster = new Raster('mona');
 
-// Make the raster invisible:
-raster.visible = false;
+  // Make the raster invisible:
+  raster.visible = false;
 
-var lastPos = view.center;
-function moveHandler(event) {
-    if (lastPos.getDistance(event.point) < 10)
-        return;
-    lastPos = event.point;
+  var lastPos = view.center;
+  function moveHandler(event) {
+      if (lastPos.getDistance(event.point) < 10)
+          return;
+      lastPos = event.point;
 
-    var size = this.bounds.size.clone();
-    var isLandscape = size.width > size.height;
+      var size = this.bounds.size.clone();
+      var isLandscape = size.width > size.height;
 
-    // If the path is in landscape orientation, we're going to
-    // split the path horizontally, otherwise vertically:
+      // If the path is in landscape orientation, we're going to
+      // split the path horizontally, otherwise vertically:
 
-    size /= isLandscape ? [2, 1] : [1, 2];
+      size /= isLandscape ? [2, 1] : [1, 2];
 
-    var path = new Path.Rectangle({
-        point: this.bounds.topLeft.floor(),
-        size: size.ceil(),
-        onMouseMove: moveHandler
-    });
-    path.fillColor = raster.getAverageColor(path);
+      var path = new Path.Rectangle({
+          point: this.bounds.topLeft.floor(),
+          size: size.ceil(),
+          onMouseMove: moveHandler
+      });
+      path.fillColor = raster.getAverageColor(path);
 
-    var path = new Path.Rectangle({
-        point: isLandscape
-            ? this.bounds.topCenter.ceil()
-            : this.bounds.leftCenter.ceil(),
-        size: size.floor(),
-        onMouseMove: moveHandler
-    });
-    path.fillColor = raster.getAverageColor(path);
+      var path = new Path.Rectangle({
+          point: isLandscape
+              ? this.bounds.topCenter.ceil()
+              : this.bounds.leftCenter.ceil(),
+          size: size.floor(),
+          onMouseMove: moveHandler
+      });
+      path.fillColor = raster.getAverageColor(path);
 
-    this.remove();
-}
+      this.remove();
+  }
 
-function onResize(event) {
-    project.activeLayer.removeChildren();
+  function onResize(event) {
+      project.activeLayer.removeChildren();
 
-    // Transform the raster so that it fills the bounding rectangle
-    // of the view:
-    raster.fitBounds(view.bounds, true);
+      // Transform the raster so that it fills the bounding rectangle
+      // of the view:
+      raster.fitBounds(view.bounds, true);
 
-    // Create a path that fills the view, and fill it with
-    // the average color of the raster:
-    new Path.Rectangle({
-        rectangle: view.bounds,
-        fillColor: raster.getAverageColor(view.bounds),
-        onMouseMove: moveHandler
-    });
-}
+      // Create a path that fills the view, and fill it with
+      // the average color of the raster:
+      new Path.Rectangle({
+          rectangle: view.bounds,
+          fillColor: raster.getAverageColor(view.bounds),
+          onMouseMove: moveHandler
+      });
+  }
     </script>
 </head>
 <body>
+  <div class="modal-container" id="js-modal">
+    <div class="modal">
+      <p>Hey, vous.</p>
+      <p>We are a band of thinkers and doers from a dozen disciplines.</p>
+      <p>A collective of writers, designers, strategists, technologists, and more.</p>
+      <p>Our shared values influence the work we do, and the impact we hope to achieve.</p>
+      <p>We believe that complex problems are best solved collaboratively.</p>
+      <p>And that diverse skills, and point of view, elevate any work we do.</p>
+      <p>Let’s chat. After all, they do say that two heads are better than one.</p>
+    </div>
+  </div>
+    <p class="click" id="js-click">click</p>
     <canvas id="canvas" resize></canvas>
     <img width="512" height="512" id="mona" style="display: none;" src="test.png">
 </body>
+
+<script type="text/javascript">
+  var colors = ['#FF00FF', '#00FFFF', '#FEFF00', '#000000'];
+  var modal = document.getElementById('js-modal');
+  var mState = false;
+
+  var click = document.getElementById('js-click');
+
+  function displayModal(){
+    mState = !mState;
+    var r = Math.floor(Math.random() * 4);
+    if(mState){
+      modal.style.display = 'none';
+    }
+    else{
+      modal.style.display = 'flex';
+      modal.children[0].style.backgroundColor = colors[r];
+      if(r == 3){
+        modal.children[0].style.color = 'white';
+      }
+      else{
+        modal.children[0].style.color = 'black';
+      }
+    }
+  }
+
+  document.addEventListener("click", displayModal);
+
+  setTimeout(function () {
+    unfade(click);
+  }, 5000);
+
+  function unfade(element) {
+      var op = 0.1;  // initial opacity
+      element.style.display = 'block';
+      var timer = setInterval(function () {
+          if (op >= 1){
+              clearInterval(timer);
+          }
+          element.style.opacity = op;
+          element.style.filter = 'alpha(opacity=' + op * 100 + ")";
+          op += op * 0.1;
+      }, 20);
+  }
+
+
+</script>
 </html>

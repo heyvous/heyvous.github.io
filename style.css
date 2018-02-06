@@ -5,8 +5,46 @@ body {
     height: 100%;
 }
 
+@font-face {
+  font-family: "Apercu-Mono";
+  src: url('css/mono_pro.otf') format('opentype');
+}
+@font-face {
+  font-family: "Apercu-Med";
+  src: url('css/Apercu_Medium.otf') format('opentype');
+}
+
 /* Scale canvas with resize attribute to full size */
 canvas[resize] {
     width: 100%;
     height: 100%;
+}
+
+.modal-container{
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.modal{
+  font-family: 'Apercu-Mono';
+  box-sizing: border-box;
+  width: 70%;
+  height: 70%;
+  background-color: black;
+  color: white;
+  padding: 50px;
+  font-size: 1.5rem;
+}
+
+.click{
+  opacity: 0;
+  font-family: 'Apercu-Med';
+  font-size: 1.3rem;
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  text-align: center;
 }
